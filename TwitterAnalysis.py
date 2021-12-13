@@ -1,9 +1,15 @@
+import sys
 from datetime import datetime
 import pandas as pd
 import streamlit as st
-import snscrape.modules.twitter as sntwitter
+from streamlit import cli as stcli
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+# Installation von snscrape (development version):
+# pip install git+https://github.com/JustAnotherArchivist/snscrape.git
+import snscrape.modules.twitter as sntwitter
+
 
 
 ####################### Twitter Frequency App
@@ -19,7 +25,7 @@ import seaborn as sns
 #    TODO: Readme
 
 
-class TwitterFrequency():
+class TwitterAnalysis():
 
     def __init__(self):
 
@@ -103,7 +109,7 @@ class TwitterFrequency():
 
     # Streamlit-Oberfläche
     st.title('Twitter Term Frequency')
-    term = st.text_input(label = 'Begriff', value = 'Soziale Republik')
+    term = st.text_input(label = 'Begriffe', value = 'Soziale Republik')
 
     today = datetime.today().strftime('%Y-%m-%d')
     date_since = st.date_input(label = 'Beginn Zeitraum', value = datetime.strptime('2021-01-01', '%Y-%m-%d'))
@@ -136,7 +142,7 @@ class TwitterFrequency():
 
     ax.set_xticklabels(g.get_xticklabels(), rotation=90)
     ax.set(xlabel=frequency, ylabel='Nennungen')
-    plt.title(f'Begriff: {term}; Zeitraum: {date_since} bis {date_until}')
+    plt.title(f'Begriffe: {term}; Zeitraum: {date_since} bis {date_until}')
     plt.tight_layout()
 
     st.pyplot(fig)
@@ -156,4 +162,9 @@ class TwitterFrequency():
 
 
 if __name__ == '__main__':
-    TwitterFrequency()
+
+    if st._is_running_with_streamlit:
+        TwitterAnalysis()
+    else:
+        sys.argv = ["streamlit", "run", sys.argv[0]]
+        sys.exit(stcli.main())
